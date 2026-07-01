@@ -302,38 +302,6 @@ Notebook `gender.ipynb` terbagi dalam beberapa bagian utama:
 - Output: Dense(1, sigmoid) untuk klasifikasi biner
 - Callbacks: EarlyStopping & ReduceLROnPlateau
 
----
-
-## 🔧 Troubleshooting
-
-### ❌ `ModuleNotFoundError: No module named 'librosa'`
-```bash
-pip install librosa soundfile
-```
-
-### ❌ `ModuleNotFoundError: No module named 'tensorflow'`
-```bash
-pip install tensorflow
-```
-
-### ❌ `FileNotFoundError: dataset_fitur_audio.csv`
-Pastikan Anda menjalankan notebook dari root folder proyek. Jika menggunakan Jupyter:
-```bash
-cd voice-recognition-logistic-regression-main
-jupyter notebook gender.ipynb
-```
-
-### ❌ CNN cell error karena folder `dataset/` kosong
-Download dataset audio dari Kaggle terlebih dahulu dan letakkan file audio di `dataset/male/` dan `dataset/female/`.
-
-### ❌ TensorFlow tidak mendeteksi GPU
-Pastikan CUDA dan cuDNN sudah terinstall. Cek dengan:
-```bash
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-```
-Jika output kosong `[]`, training akan berjalan di CPU (lebih lambat tapi tetap berfungsi).
-
----
 
 ## 📄 Lisensi
 
