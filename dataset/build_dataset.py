@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import concurrent.futures
 from tqdm import tqdm 
 from prepocessing.voice_preprocessing_ml import preprocess_audio_ml
@@ -65,7 +66,9 @@ def main():
         
     print(f"Total file: {len(all_tasks)}")
     
-    all_data = []
+    all_ml_data = []
+    x_dl_list = []
+    y_dl_list = []
     
     #multithread
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -74,21 +77,35 @@ def main():
     #hasil
     for res in results:
         if res is not None:
-            all_data.append(res)
+            ml_dict = res.copy()
+            
+            if 'dl_x' in ml_dict:
+                x_dl_list.append(ml_dict.pop('dl_x'))
+            if 'dl_y' in ml_dict:
+                y_dl_list.append(ml_dict.pop('dl_y'))
+                
+            all_ml_data.append(ml_dict)
             
     print("done")
     
-    #create tabel
-    if len(all_data) > 0:
-        df = pd.DataFrame(all_data)
+    #create tabel CSV (Untuk ML)
+    if len(all_ml_data) > 0:
+        df = pd.DataFrame(all_ml_data)
         
         #pindahkan kolom nama file dan label
         kolom_lain = [c for c in df.columns if c not in ['filename', 'label']]
         df = df[['filename', 'label'] + kolom_lain]
         
-        #simpan
+        #simpan CSV
         df.to_csv(OUTPUT_CSV, index=False)
-        print(f"Tabel :  {OUTPUT_CSV}")
+        print(f"Tabel ML :  {OUTPUT_CSV}")
+        
+        #simpan NPY (Untuk DL / CNN)
+        if len(x_dl_list) > 0:
+            np.save(OUTPUT_X_DL, np.array(x_dl_list))
+            np.save(OUTPUT_Y_DL, np.array(y_dl_list))
+            print(f"Data DL X:  {OUTPUT_X_DL}")
+            print(f"Data DL Y:  {OUTPUT_Y_DL}")
     else:
         print("Gagal!")
 

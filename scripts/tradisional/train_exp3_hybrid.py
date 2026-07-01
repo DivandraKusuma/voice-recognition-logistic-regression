@@ -1,10 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from models.ML.ml_models import get_logistic_model, get_svm_model, get_rf_model
 
 def run_experiment_3(csv_path="dataset_fitur_audio.csv"):
-    print("\nmenggunakan fitur HYBRID untuk klasifikasi")
     df = pd.read_csv(csv_path)
     
     kolom_fitur = [c for c in df.columns if c not in ['filename', 'label']]
@@ -24,7 +23,24 @@ def run_experiment_3(csv_path="dataset_fitur_audio.csv"):
         model.fit(X_train, y_train)
         preds = model.predict(X_test)
         acc = accuracy_score(y_test, preds)
-        results[name] = acc
-        print(f"Akurasi {name}: {acc:.4f}")
+        prec = precision_score(y_test, preds, zero_division=0)
+        rec = recall_score(y_test, preds, zero_division=0)
+        f1 = f1_score(y_test, preds, zero_division=0)
+        cm = confusion_matrix(y_test, preds)
+        
+        results[name] = {
+            'accuracy': acc,
+            'precision': prec,
+            'recall': rec,
+            'f1_score': f1,
+            'confusion_matrix': cm
+        }
+        
+        print(f"\n--- Evaluasi {name} ---")
+        print(f"Akurasi          : {acc:.4f}")
+        print(f"Precision        : {prec:.4f}")
+        print(f"Recall           : {rec:.4f}")
+        print(f"F1-Score         : {f1:.4f}")
+        print(f"Confusion Matrix :\n{cm}")
         
     return results
