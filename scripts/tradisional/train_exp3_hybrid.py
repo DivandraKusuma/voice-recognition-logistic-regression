@@ -1,0 +1,30 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from models.ML.ml_models import get_logistic_model, get_svm_model, get_rf_model
+
+def run_experiment_3(csv_path="dataset_fitur_audio.csv"):
+    print("\nmenggunakan fitur HYBRID untuk klasifikasi")
+    df = pd.read_csv(csv_path)
+    
+    kolom_fitur = [c for c in df.columns if c not in ['filename', 'label']]
+    X = df[kolom_fitur]
+    y = df['label'].map({'male': 0, 'female': 1})
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    
+    dict_models = {
+        'Logistic Regression': get_logistic_model(),
+        'SVM': get_svm_model(),
+        'Random Forest': get_rf_model()
+    }
+    
+    results = {}
+    for name, model in dict_models.items():
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+        acc = accuracy_score(y_test, preds)
+        results[name] = acc
+        print(f"Akurasi {name}: {acc:.4f}")
+        
+    return results

@@ -3,24 +3,45 @@ import pandas as pd
 import concurrent.futures
 from tqdm import tqdm 
 from prepocessing.voice_preprocessing_ml import preprocess_audio_ml
+from prepocessing.voice_preprocessing_dl import preprocess_audio_dl
 from features.feature_extractor_ml import extract_features_ml
+from features.feature_extractor_dl import extract_features_dl
 
 DATASET_PATH = "dataset"
+# output file csv ML
 OUTPUT_CSV = "dataset_fitur_audio.csv"
+
+OUTPUT_X_DL = "x_spectrogram_data.npy"
+OUTPUT_Y_DL = "y_gender_labels.npy"
+
 
 def process_single_file(file_info):
     file_path = file_info['path']
     file_name = file_info['filename']
     label = file_info['label']
+
+    features = {
+        'ml': None,
+        'dl_x': None,
+        'dl_y': None
+    }
     
     #panggil fungsi preprocessing
-    y, sr = preprocess_audio_ml(file_path)
-    
-    if y is not None:
+    y_ml, sr_ml = preprocess_audio_ml(file_path)
+
+    if y_ml is not None:
         #panggil fungsi ekstraksi fitur
-        features = extract_features_ml(y, sr)
+        features = extract_features_ml(y_ml, sr_ml)
         features['filename'] = file_name
         features['label'] = label
+        
+    y_dl, sr_dl = preprocess_audio_dl(file_path)
+    if y_dl is not None:
+        spectrogram = extract_features_dl(y_dl, sr_dl)
+        bin_label = 0 if label == "male" else 1
+        features['dl_x'] = spectrogram
+        features['dl_y'] = bin_label
+
         
         return features
         
