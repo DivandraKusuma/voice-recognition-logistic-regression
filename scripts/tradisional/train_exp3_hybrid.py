@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from models.ML.ml_models import get_logistic_model, get_svm_model, get_rf_model
 
@@ -11,6 +12,10 @@ def run_experiment_3(csv_path="dataset_fitur_audio.csv"):
     y = df['label'].map({'male': 0, 'female': 1})
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
     
     dict_models = {
         'Logistic Regression': get_logistic_model(),
