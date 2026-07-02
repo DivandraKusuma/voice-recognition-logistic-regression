@@ -7,8 +7,8 @@ from models.ML.ml_models import get_logistic_model, get_svm_model, get_rf_model
 def run_experiment_3(csv_path="dataset_fitur_audio.csv"):
     df = pd.read_csv(csv_path)
     
-    kolom_fitur = [c for c in df.columns if c not in ['filename', 'label']]
-    X = df[kolom_fitur]
+    fitur_skenario_3 = [c for c in df.columns if c.startswith('mfcc_') or c.startswith('pitch_') or c.startswith('centroid_') or c.startswith('bandwidth_') or c.startswith('rolloff_')]
+    X = df[fitur_skenario_3]
     y = df['label'].map({'male': 0, 'female': 1})
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
